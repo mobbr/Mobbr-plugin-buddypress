@@ -68,4 +68,4 @@ include an update button
 
 make plugin available via Wordpress
 
-Address questions to: @ernesto
+Address questions to: @efspruyt
