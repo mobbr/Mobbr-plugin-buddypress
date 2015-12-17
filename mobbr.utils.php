@@ -39,7 +39,7 @@ function get_mobbr_participation() {
 
     if($task_url) {
         $req = wp_remote_get(MOBBR_URI_ENDPOINT . "?url=" . urlencode($task_url), array('headers'=> array('Accept' => 'application/json')));
-        if($req['response']['code'] == 200) {
+        if(!is_wp_error($req) && $req && $req['response']['code'] == 200) {
             $response = json_decode($req['body'], true);
             $task_script = $response['result']['script'];
             $script_type = $task_script['type'];
