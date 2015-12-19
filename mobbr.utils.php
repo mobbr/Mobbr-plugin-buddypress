@@ -5,6 +5,10 @@ function get_page_url() {
     return (is_single())?get_permalink():(isset($_SERVER['HTTPS']) ? "https" : "http")."://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 }
 
+function get_post_url() {
+    return (is_single() || is_home())?get_permalink():get_page_url();
+}
+
 function get_mobbr_participation() {
     $page_url = get_page_url();
 
@@ -48,26 +52,31 @@ function get_mobbr_participation() {
             $script_desc = $task_script['description'];
             $script_keywords = array_merge($script_keywords, $task_script['keywords']);
             $task_participants = $task_script['participants'];
-            if($options['share'] >= 0 and $options['share'] <= 100) {
-                $cut = round((1 - ($options['share']/100.0)), 4);
-                foreach($task_participants as $key=>$participant) {
-                    if(preg_match("/\\%$/", $participant['share'])) {
-                        $participant['share'] = round(((int)str_replace("%", "", $participant['share']))*$cut, 4) . "%";
-                        $task_participants[$key] = $participant;
+            if(is_array($task_participants)) {
+                if($options['share'] >= 0 and $options['share'] <= 100) {
+                    $cut = round((1 - ($options['share']/100.0)), 4);
+                    foreach($task_participants as $key=>$participant) {
+                        if(preg_match("/\\%$/", $participant['share'])) {
+                            $participant['share'] = round(((int)str_replace("%", "", $participant['share']))*$cut, 4) . "%";
+                            $task_participants[$key] = $participant;
+                        }
                     }
                 }
+                $script_participants = array_merge($script_participants, $task_participants);
             }
-            $script_participants = array_merge($script_participants, $task_participants);
             $use_local_script = false;
         }
     }
 
     if($use_local_script) {
         $local_script_participants = array();
-        foreach(get_post_meta($wp_query->post->ID, '_mobbr_participants') as $participant) {
-            array_push($local_script_participants, json_decode($participant, true));
+        $participants_meta = get_post_meta($wp_query->post->ID, '_mobbr_participants');
+        if(is_array($participants_meta)) {
+            foreach(get_post_meta($wp_query->post->ID, '_mobbr_participants') as $participant) {
+                array_push($local_script_participants, json_decode($participant, true));
+            }
+            $script_participants = array_merge($script_participants, $local_script_participants);
         }
-        $script_participants = array_merge($script_participants, $local_script_participants);
     }
 
     $participation = array(

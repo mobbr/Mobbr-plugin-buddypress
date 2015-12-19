@@ -12,6 +12,7 @@ Version: 0.1
 Author URI: https://github.com/davidsemakula
 */
 
+require_once("mobbr.config.php");
 require_once("mobbr.head.php");
 require_once("mobbr.widget.php");
 require_once("mobbr.admin.php");
@@ -23,7 +24,7 @@ add_action( 'wp_head', 'mobbr_script');
 
 add_action("widgets_init", function() {
     $options = get_option('mobbr_plugin_options');
-    if(isset($options['button_position']) && $options['button_position'] == 'widget') {
+    if(isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_WIDGET) {
         register_widget("MobbrWidget");
     }
 });

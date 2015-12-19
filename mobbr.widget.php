@@ -29,17 +29,19 @@ class MobbrWidget extends WP_Widget {
     }
 
     public function widget($args, $instance) {
-        if(is_home())
+        $options = get_option('mobbr_plugin_options');
+        if(is_home() && isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_WIDGET)
             return;
         $currency = isset($instance["currency"])?$instance["currency"]:"USD";
         $lighbox_url = LIGHTBOX_URL;
-        $url = get_page_url();
+        $url = get_post_url();
 
-        echo <<<BTN
-            <script type="text/javascript">
-                mobbr.setLightboxUrl('$lighbox_url');
-                mobbr.button('$url', '$currency');
-            </script>
-BTN;
+        echo "<script type='text/javascript'>mobbr.setLightboxUrl('$lighbox_url');</script>";
+
+        if($options['button_style'] == BUTTON_STYLE_CUSTOM) {
+            echo "<button onClick=\"mobbr.makePayment('$url')\">Make Payment</button>";
+        } else {
+            echo "<script type='text/javascript'>mobbr.button('$url', '$currency');</script>";
+        }
     }
 }

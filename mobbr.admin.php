@@ -1,4 +1,5 @@
 <?php
+require_once("mobbr.config.php");
 function plugin_admin_add_page() {
     add_options_page('Mobbr', 'Mobbr', 'manage_options', 'mobbr', 'mobbr_plugin_options_page');
 }
@@ -41,21 +42,21 @@ function mobbr_plugin_section_payment_details_text() {
 
 function mobbr_plugin_setting_placement_options() {
     $options = get_option('mobbr_plugin_options');
-    echo "<input id='mobbr_plugin_placement_options' name='mobbr_plugin_options[placement_options][]' type='checkbox' value='posts' ".((isset($options['placement_options']) && in_array('posts', $options['placement_options']))?"checked":"")."/> Display on Posts<br/>";
-    echo "<input id='mobbr_plugin_placement_options' name='mobbr_plugin_options[placement_options][]' type='checkbox' value='pages' ".((isset($options['placement_options']) && in_array('pages', $options['placement_options']))?"checked":"")."/> Display on Pages";
+    echo "<input id='mobbr_plugin_placement_options' name='mobbr_plugin_options[placement_options][]' type='checkbox' value='".BUTTON_PLACEMENT_POSTS."' ".((isset($options['placement_options']) && in_array(BUTTON_PLACEMENT_POSTS, $options['placement_options']))?"checked":"")."/> Display on Posts<br/>";
+    echo "<input id='mobbr_plugin_placement_options' name='mobbr_plugin_options[placement_options][]' type='checkbox' value='".BUTTON_PLACEMENT_PAGES."' ".((isset($options['placement_options']) && in_array(BUTTON_PLACEMENT_PAGES, $options['placement_options']))?"checked":"")."/> Display on Pages";
 }
 
 function mobbr_plugin_setting_button_style() {
     $options = get_option('mobbr_plugin_options');
-    echo "<input id='mobbr_plugin_button_style' name='mobbr_plugin_options[button_style]' type='radio' value='button' ".((isset($options['button_style']) && $options['button_style'] == 'button')?"checked":"")." /> Mobbr Payment Button<br/>";
-    echo "<input id='mobbr_plugin_button_style' name='mobbr_plugin_options[button_style]' type='radio' value='link' ".((isset($options['button_style']) && $options['button_style'] == 'link')?"checked":"")."/> Styled Link";
+    echo "<input id='mobbr_plugin_button_style' name='mobbr_plugin_options[button_style]' type='radio' value='".BUTTON_STYLE_OFFICIAL."' ".((isset($options['button_style']) && $options['button_style'] == BUTTON_STYLE_OFFICIAL)?"checked":"")." /> Mobbr Payment Button<br/>";
+    echo "<input id='mobbr_plugin_button_style' name='mobbr_plugin_options[button_style]' type='radio' value='".BUTTON_STYLE_CUSTOM."' ".((isset($options['button_style']) && $options['button_style'] == BUTTON_STYLE_CUSTOM)?"checked":"")."/> Custom Button";
 }
 
 function mobbr_plugin_setting_button_position() {
     $options = get_option('mobbr_plugin_options');
-    echo "<input id='mobbr_plugin_button_position' name='mobbr_plugin_options[button_position]' type='radio' value='top' ".((isset($options['button_position']) && $options['button_position'] == 'top')?"checked":"")." /> Top<br/>";
-    echo "<input id='mobbr_plugin_button_position' name='mobbr_plugin_options[button_position]' type='radio' value='bottom' ".((isset($options['button_position']) && $options['button_position'] == 'bottom')?"checked":"")."/> Bottom<br/>";
-    echo "<input id='mobbr_plugin_button_position' name='mobbr_plugin_options[button_position]' type='radio' value='widget' ".((isset($options['button_position']) && $options['button_position'] == 'widget')?"checked":"")."/> Widget Area<br/>";
+    echo "<input id='mobbr_plugin_button_position' name='mobbr_plugin_options[button_position]' type='radio' value='".BUTTON_POSITION_TOP."' ".((isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_TOP)?"checked":"")." /> Top<br/>";
+    echo "<input id='mobbr_plugin_button_position' name='mobbr_plugin_options[button_position]' type='radio' value='".BUTTON_POSITION_BOTTOM."' ".((isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_BOTTOM)?"checked":"")."/> Bottom<br/>";
+    echo "<input id='mobbr_plugin_button_position' name='mobbr_plugin_options[button_position]' type='radio' value='".BUTTON_POSITION_WIDGET."' ".((isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_WIDGET)?"checked":"")."/> Widget Area<br/>";
 }
 
 function mobbr_plugin_setting_payment_email() {
@@ -65,7 +66,7 @@ function mobbr_plugin_setting_payment_email() {
 
 function mobbr_plugin_setting_payment_share() {
     $options = get_option('mobbr_plugin_options');
-    echo "<input id='mobbr_plugin_payment_share' name='mobbr_plugin_options[share]' type='text' value='".(isset($options['share'])?$options['share']:"")."' />";
+    echo "<input id='mobbr_plugin_payment_share' name='mobbr_plugin_options[share]' type='text' value='".(isset($options['share'])?$options['share']:"")."' /> %";
 }
 
 function mobbr_plugin_options_validate($input) {
