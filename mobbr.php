@@ -29,7 +29,7 @@ add_action("widgets_init", function() {
     }
 });
 
-add_filter('the_content', 'add_mobbr_button_to_content');
+add_filter('the_content', 'add_mobbr_button_to_content', 99);
 
 add_action('admin_menu', 'plugin_admin_add_page');
 
