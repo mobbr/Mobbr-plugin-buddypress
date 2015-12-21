@@ -80,7 +80,6 @@ function get_mobbr_participation() {
     }
 
     $participation = array(
-        "url" => $page_url,
         "type" => $script_type,
         "language" => $script_lang,
         "title" => $script_title,
