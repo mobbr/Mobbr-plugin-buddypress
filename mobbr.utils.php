@@ -90,3 +90,29 @@ function get_mobbr_participation() {
 
     return $participation;
 }
+
+function save_post_participation_metadata($post_id){
+    if (!isset($_POST['mobbr_participant_id']) || !$_POST['mobbr_participant_id'] || !is_array($_POST['mobbr_participant_id'])) {
+        return;
+    }
+
+    if (!isset($_POST['mobbr_participant_share']) || !$_POST['mobbr_participant_share'] || !is_array($_POST['mobbr_participant_share'])) {
+        return;
+    }
+
+    $ids = $_POST['mobbr_participant_id'];
+    $shares = $_POST['mobbr_participant_share'];
+
+    $num = min(count($ids),count($shares));
+
+    delete_post_meta($post_id, '_mobbr_participants');
+    foreach(range(0,$num-1) as $key) {
+        $id = sanitize_text_field($ids[$key]);
+        $share = (int)$shares[$key];
+
+        if($id && filter_var($id, FILTER_VALIDATE_EMAIL) && $share > 0 && $share < 100) {
+            $data = array('id' => 'mailto:'.$id, 'share' => $share, 'role' => 'contributor');
+            add_post_meta($post_id, '_mobbr_participants', json_encode($data));
+        }
+    }
+}
