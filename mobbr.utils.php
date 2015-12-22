@@ -35,7 +35,7 @@ function get_mobbr_participation() {
     $script_type = 'payment';
     $script_lang = 'EN';
     $script_title = $title;
-    $script_desc = '';
+    $script_desc = $content;
     $script_keywords = array('tunga.io', 'tunga');
     $script_participants = array($owner);
 
