@@ -41,5 +41,3 @@ add_action('add_meta_boxes', 'mobbr_plugin_add_meta_box');
 add_action('save_post', 'mobbr_plugin_save_meta_box_data');
 
 add_action('wp_ajax_add_post_meta', 'ajax_save_post_participation_metadata');
-
-add_action('wp_ajax_nopriv_add_post_meta', 'ajax_save_post_participation_metadata');
