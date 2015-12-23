@@ -10,8 +10,6 @@ function get_post_url() {
 }
 
 function get_mobbr_participation() {
-    $page_url = get_page_url();
-
     $title = get_the_title();
     $options = get_option('mobbr_plugin_options');
 
@@ -59,13 +57,18 @@ function get_mobbr_participation() {
         if(!is_wp_error($req) && $req && $req['response']['code'] == 200) {
             $response = json_decode($req['body'], true);
             $task_script = $response['result']['script'];
-            $script_type = $task_script['type'];
-            $script_lang = $task_script['language'];
-            $script_title = $task_script['title'];
-            $script_desc = $task_script['description'];
-            $script_keywords = array_merge($script_keywords, $task_script['keywords']);
-            $task_participants = $task_script['participants'];
-            if(is_array($task_participants)) {
+            if(isset($task_script['type']))
+                $script_type = $task_script['type'];
+            if(isset($task_script['language']))
+                $script_lang = $task_script['language'];
+            if(isset($task_script['title']))
+                $script_title = $task_script['title'];
+            if(isset($task_script['description']))
+                $script_desc = $task_script['description'];
+            if(isset($task_script['keywords']) && is_array($task_script['keywords']))
+                $script_keywords = array_merge($script_keywords, $task_script['keywords']);
+            if(isset($task_script['participants']) && is_array($task_script['participants'])) {
+                $task_participants = $task_script['participants'];
                 if($options['share'] >= 0 and $options['share'] <= 100) {
                     $cut = round((1 - ($options['share']/100.0)), 4);
                     foreach($task_participants as $key=>$participant) {
