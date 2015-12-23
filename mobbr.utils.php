@@ -28,9 +28,22 @@ function get_mobbr_participation() {
     $content = in_the_loop()?get_the_content():$wp_query->post->post_content;
 
     $task_url = "";
-    if(preg_match("/https?:\\/\\/[^\\s\"]+/i", $content, $matches)) {
+    if(preg_match("/https?:\/\/[^\s\"]+/i", $content, $matches)) {
         $task_url = $matches[0];
     }
+
+    $amount = 0;
+    if(preg_match("/Fee:\s*\Q$\E?\s*([\d,\.]+)/i", $content, $matches)) {
+        if(count($matches) > 1) {
+            $number = $matches[1];
+            if(preg_match("/\d+\.\d+/i", $number)) {
+                $amount = str_replace(",","",$number);
+            } else {
+                $amount = str_replace(",",".",$number);
+            }
+        }
+    }
+    $amount = floatval($amount);
 
     $script_type = 'payment';
     $script_lang = 'EN';
@@ -85,7 +98,11 @@ function get_mobbr_participation() {
         "title" => $script_title,
         "description" => $script_desc,
         "keywords" => $script_keywords,
-        "participants" => $script_participants
+        "participants" => $script_participants,
+        "extras" => array(
+            "editable" => $use_local_script,
+            "task_url" => $task_url,
+            "amount" => $amount)
     );
 
     return $participation;
