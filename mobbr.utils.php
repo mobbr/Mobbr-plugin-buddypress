@@ -76,8 +76,8 @@ function get_mobbr_participation() {
                     }
                 }
                 $script_participants = array_merge($script_participants, $task_participants);
+                $use_local_script = false;
             }
-            $use_local_script = false;
         }
     }
 
