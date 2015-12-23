@@ -33,7 +33,7 @@ function get_mobbr_participation() {
     }
 
     $amount = 0;
-    if(preg_match("/Fee:\s*\Q$\E?\s*([\d,\.]+)/i", $content, $matches)) {
+    if(preg_match("/Fee:\s*\Q$\E?\s*([\d,\.]+)/i", $title.' '.$content, $matches)) {
         if(count($matches) > 1) {
             $number = $matches[1];
             if(preg_match("/\d+\.\d+/i", $number)) {
