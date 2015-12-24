@@ -31,7 +31,8 @@ function get_mobbr_participation() {
     }
 
     $amount = 0;
-    if(preg_match("/Fee:\s*\Q$\E?\s*([\d,\.]+)/i", $title.' '.$content, $matches)) {
+    $currency = 'USD';
+    if(preg_match("/Fee:\s*\Q$\E?\s*([\d,\.]+)\s*(\Q€\E)?/i", $title.' '.$content, $matches)) {
         if(count($matches) > 1) {
             $number = $matches[1];
             if(preg_match("/\d+\.\d+/i", $number)) {
@@ -39,14 +40,18 @@ function get_mobbr_participation() {
             } else {
                 $amount = str_replace(",",".",$number);
             }
+            if(isset($matches[2])) {
+                $currency = 'EUR';
+            }
         }
+
     }
     $amount = floatval($amount);
 
     $script_type = 'payment';
     $script_lang = 'EN';
     $script_title = $title;
-    $script_desc = $content;
+    $script_desc = htmlspecialchars($content);
     $script_keywords = array('tunga.io', 'tunga');
     $script_participants = array($owner);
 
@@ -105,7 +110,9 @@ function get_mobbr_participation() {
         "extras" => array(
             "editable" => $use_local_script,
             "task_url" => $task_url,
-            "amount" => $amount)
+            "amount" => $amount,
+            "currency" => $currency
+        )
     );
 
     return $participation;
