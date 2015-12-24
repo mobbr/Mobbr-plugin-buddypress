@@ -26,13 +26,13 @@ function get_mobbr_participation() {
     $content = in_the_loop()?get_the_content():$wp_query->post->post_content;
 
     $task_url = "";
-    if(preg_match("/https?:\/\/[^\s\"]+/i", $content, $matches)) {
+    if(preg_match(URL_REGEX, $content, $matches)) {
         $task_url = $matches[0];
     }
 
     $amount = 0;
     $currency = 'USD';
-    if(preg_match("/Fee:\s*\Q$\E?\s*([\d,\.]+)\s*(\Q€\E)?/i", $title.' '.$content, $matches)) {
+    if(preg_match(TASK_AMOUNT_REGEX, $title.' '.$content, $matches)) {
         if(count($matches) > 1) {
             $number = $matches[1];
             if(preg_match("/\d+\.\d+/i", $number)) {

@@ -1,4 +1,6 @@
 <?php
+require_once("mobbr.config.php");
+
 function ajax_save_post_participation_metadata() {
     $success = false;
     $error_msg = 'Missing parameters';
@@ -17,7 +19,7 @@ function ajax_save_post_participation_metadata() {
                 $share = (int)$participant['share'];
                 $role = isset($participant['role'])?sanitize_text_field($participant['role']):'contributor';
 
-                if($id && (filter_var(str_replace("mailto:", "", $id), FILTER_VALIDATE_EMAIL) || preg_match("/\b(?:(?:https?|ftp):\/\/|www\.)[-a-z0-9+&@#\/%?=~_|!:,.;]*[-a-z0-9+&@#\/%=~_|]/i", $id)) && $share > 0 && $share < 100 && $role != 'owner') {
+                if($id && (filter_var(str_replace("mailto:", "", $id), FILTER_VALIDATE_EMAIL) || preg_match(URL_REGEX, $id)) && $share > 0 && $share < 100 && $role != 'owner') {
                     $data = array('id' => $id, 'share' => $share, 'role' => $role);
                     if(add_post_meta($post_id, '_mobbr_participants', json_encode($data))) {
                         $success = true;

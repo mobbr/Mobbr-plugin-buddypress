@@ -1,4 +1,6 @@
 <?php
+require_once("mobbr.config.php");
+
 function mobbr_plugin_add_meta_box() {
     $screens = array('post', 'page');
     foreach ($screens as $screen) {
@@ -34,11 +36,11 @@ function make_participant_fields($participant) {
     echo '<label for="mobbr_participant_id">';
     _e( 'ID', 'mobbr_plugin_textdomain' );
     echo '</label> ';
-    echo '<input type="text" id="mobbr_participant_id" name="mobbr_participant_id[]" value="'.str_replace('mailto:','',$data['id']).'" style="margin-right: 20px;"/>';
+    echo '<input type="text" id="mobbr_participant_id" name="mobbr_participant_id[]" value="'.str_replace('mailto:','',$data['id']).'" style="margin-right: 20px;" placeholder="email or profile url"/>';
     echo '<label for="mobbr_participant_id">';
     _e( 'Share', 'mobbr_plugin_textdomain' );
     echo '</label> ';
-    echo '<input type="text" id="mobbr_participant_share" name="mobbr_participant_share[]" value="'.$data['share'].'" /><br/>';
+    echo '<input type="text" id="mobbr_participant_share" name="mobbr_participant_share[]" value="'.$data['share'].'" placeholder="relative share" /><br/>';
 }
 
 function mobbr_plugin_save_meta_box_data($post_id) {
@@ -82,8 +84,12 @@ function mobbr_plugin_save_meta_box_data($post_id) {
         $id = sanitize_text_field($ids[$key]);
         $share = (int)$shares[$key];
 
-        if($id && filter_var($id, FILTER_VALIDATE_EMAIL) && $share > 0 && $share < 100) {
-            $data = array('id' => 'mailto:'.$id, 'share' => $share, 'role' => 'contributor');
+        $is_email = filter_var($id, FILTER_VALIDATE_EMAIL);
+
+        if($id && ($is_email || preg_match(URL_REGEX, $id)) && $share > 0 && $share < 100) {
+            if($is_email)
+                $id = 'mailto:'.$id;
+            $data = array('id' => $id, 'share' => $share, 'role' => 'contributor');
             add_post_meta($post_id, '_mobbr_participants', json_encode($data));
         }
     }
