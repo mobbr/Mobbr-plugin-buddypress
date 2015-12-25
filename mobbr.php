@@ -1,18 +1,20 @@
 <?php
 /**
- * @package Mobbr
+ * @package Mobbr Payments
+ * @author David Semakula
  * @version 0.1
  */
 /*
-Plugin Name: Mobbr Plugin
-Plugin URI: http://wordpress.org/plugins/mobbr/
-Description: Mobbr Plugin for WordPress & BuddyPress
+Plugin Name: Mobbr Payments
+Plugin URI: http://wordpress.org/plugins/mobbr-payments/
+Description: Adds mobbr crowd payments to your WordPress website.
 Author: David Semakula
 Version: 0.1
 Author URI: https://github.com/davidsemakula
 */
 
 require_once("mobbr.config.php");
+require_once("mobbr.utils.php");
 require_once("mobbr.head.php");
 require_once("mobbr.widget.php");
 require_once("mobbr.admin.php");
@@ -24,8 +26,8 @@ add_action( 'wp_head', 'mobbr_participation_meta');
 add_action( 'wp_head', 'mobbr_script');
 
 add_action("widgets_init", function() {
-    $options = get_option('mobbr_plugin_options');
-    if(isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_WIDGET) {
+    $options = get_mobbr_plugin_options();
+    if(isset($options['button_position']) && $options['button_position'] == MOBBR_BUTTON_POSITION_WIDGET) {
         register_widget("MobbrWidget");
     }
 });
@@ -41,3 +43,8 @@ add_action('add_meta_boxes', 'mobbr_plugin_add_meta_box');
 add_action('save_post', 'mobbr_plugin_save_meta_box_data');
 
 add_action('wp_ajax_add_post_meta', 'ajax_save_post_participation_metadata');
+
+$options = get_mobbr_plugin_options();
+if($options['require_auth']) {
+    add_action('wp_ajax_nopriv_add_post_meta', 'ajax_save_post_participation_metadata');
+}

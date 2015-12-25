@@ -9,13 +9,18 @@ function get_post_url() {
     return (is_single() || is_home())?get_permalink():get_page_url();
 }
 
+function get_mobbr_plugin_options() {
+    global $MOBBR_DEFAULT_OPTIONS;
+    $options = get_option('mobbr_plugin_options', $MOBBR_DEFAULT_OPTIONS);
+    if(count($options) != count($MOBBR_DEFAULT_OPTIONS)) {
+        $options = array_merge($MOBBR_DEFAULT_OPTIONS, $options);
+    }
+    return $options;
+}
+
 function get_mobbr_participation() {
     $title = get_the_title();
-    $options = get_option('mobbr_plugin_options');
-
-    $options['email'] = $options['email']?$options['email']:get_option('wp_email');
-    $options['share'] = $options['share']?$options['share']:10;
-
+    $options = get_mobbr_plugin_options();
     $owner = array(
         "id" => "mailto:$options[email]",
         "role" => "owner",
@@ -26,23 +31,26 @@ function get_mobbr_participation() {
     $content = in_the_loop()?get_the_content():$wp_query->post->post_content;
 
     $task_url = "";
-    if(preg_match(URL_REGEX, $content, $matches)) {
+    if(preg_match(MOBBR_REGEX_URL, $title.' '.$content, $matches)) {
         $task_url = $matches[0];
     }
 
     $amount = 0;
     $currency = 'USD';
-    if(preg_match(TASK_AMOUNT_REGEX, $title.' '.$content, $matches)) {
-        if(count($matches) > 1) {
-            $number = $matches[1];
-            if(preg_match("/\d+\.\d+/i", $number)) {
-                $amount = str_replace(",","",$number);
-            } else {
-                $amount = str_replace(",",".",$number);
-            }
-            if(isset($matches[2])) {
-                $currency = 'EUR';
-            }
+    if(preg_match(MOBBR_REGEX_TASK_AMOUNT, $title.' '.$content, $matches)) {
+        $number = null;
+        if(isset($matches['amount']) && $matches['amount']) {
+            $number = $matches['amount'];
+        } else if(isset($matches['amount2']) && $matches['amount2']) {
+            $number = $matches['amount2'];
+        }
+        if($number) {
+            $amount = str_replace(",",(preg_match("/\d+\.\d+/i", $number)?"":"."),$number);
+        }
+
+        global $MOBBR_EURO_SYMBOLS;
+        if((isset($matches['currency']) && $matches['currency'] && in_array($matches['currency'], $MOBBR_EURO_SYMBOLS)) || (isset($matches['currency2']) && $matches['currency2'] && in_array($matches['currency2'], $MOBBR_EURO_SYMBOLS))) {
+            $currency = 'EUR';
         }
 
     }
@@ -58,7 +66,7 @@ function get_mobbr_participation() {
     $use_local_script = true;
 
     if($task_url) {
-        $req = wp_remote_get(MOBBR_URI_ENDPOINT . "?url=" . urlencode($task_url), array('headers'=> array('Accept' => 'application/json')));
+        $req = wp_remote_get(MOBBR_URI_INFO_ENDPOINT . "?url=" . urlencode($task_url), array('headers'=> array('Accept' => 'application/json')));
         if(!is_wp_error($req) && $req && $req['response']['code'] == 200) {
             $response = json_decode($req['body'], true);
             $task_script = $response['result']['script'];
@@ -74,16 +82,52 @@ function get_mobbr_participation() {
                 $script_keywords = array_merge($script_keywords, $task_script['keywords']);
             if(isset($task_script['participants']) && is_array($task_script['participants'])) {
                 $task_participants = $task_script['participants'];
-                if($options['share'] >= 0 and $options['share'] <= 100) {
-                    $cut = round((1 - ($options['share']/100.0)), 4);
+                if($options['share'] >= 0 and $options['share'] < 100) {
+                    $absolute_shares = array();
+                    $relative_shares = array();
+                    $absolute_participants = array();
+                    $relative_participants = array();
                     foreach($task_participants as $key=>$participant) {
-                        if(preg_match("/\\%$/", $participant['share'])) {
-                            $participant['share'] = round(((int)str_replace("%", "", $participant['share']))*$cut, 4) . "%";
-                            $task_participants[$key] = $participant;
+                        if(preg_match("/%$/", $participant['share'])) {
+                            $share = intval(str_replace("%", "", $participant['share']));
+                            if($share > 0) {
+                                $absolute_shares[] = $share;
+                                $new_participant = $participant;
+                                $new_participant['share'] = $share;
+                                $absolute_participants[] = $new_participant;
+                            }
+                        } else {
+                            $share = intval($participant['share']);
+                            if($share > 0) {
+                                $relative_shares[] = $share;
+                                $new_participant = $participant;
+                                $new_participant['share'] = $share;
+                                $relative_participants[] = $new_participant;
+                            }
                         }
                     }
+                    $additional_participants = array();
+                    $total_absolutes = array_sum($absolute_shares);
+                    $total_relatives = array_sum($relative_shares);
+                    if($total_absolutes >= 100 || $total_relatives == 0) {
+                        $additional_participants = $absolute_participants;
+                    } else if($total_absolutes == 0) {
+                        $additional_participants = $relative_participants;
+                    } else {
+                        $additional_participants = $absolute_participants;
+                        foreach($relative_participants as $participant) {
+                            $share = round((($participant['share']*(100-$total_absolutes))/($total_relatives)),0);
+                            if($share > 0) {
+                                $new_participant = $participant;
+                                $new_participant['share'] = $share;
+                                $additional_participants[] = $new_participant;
+                            }
+                        }
+                    }
+                    if(count($additional_participants)) {
+                        $script_participants = array_merge($script_participants, $additional_participants);
+                    }
                 }
-                $script_participants = array_merge($script_participants, $task_participants);
                 $use_local_script = false;
             }
         }
@@ -114,32 +158,5 @@ function get_mobbr_participation() {
             "currency" => $currency
         )
     );
-
     return $participation;
-}
-
-function save_post_participation_metadata($post_id){
-    if (!isset($_POST['mobbr_participant_id']) || !$_POST['mobbr_participant_id'] || !is_array($_POST['mobbr_participant_id'])) {
-        return;
-    }
-
-    if (!isset($_POST['mobbr_participant_share']) || !$_POST['mobbr_participant_share'] || !is_array($_POST['mobbr_participant_share'])) {
-        return;
-    }
-
-    $ids = $_POST['mobbr_participant_id'];
-    $shares = $_POST['mobbr_participant_share'];
-
-    $num = min(count($ids),count($shares));
-
-    delete_post_meta($post_id, '_mobbr_participants');
-    foreach(range(0,$num-1) as $key) {
-        $id = sanitize_text_field($ids[$key]);
-        $share = (int)$shares[$key];
-
-        if($id && filter_var($id, FILTER_VALIDATE_EMAIL) && $share > 0 && $share < 100) {
-            $data = array('id' => 'mailto:'.$id, 'share' => $share, 'role' => 'contributor');
-            add_post_meta($post_id, '_mobbr_participants', json_encode($data));
-        }
-    }
 }

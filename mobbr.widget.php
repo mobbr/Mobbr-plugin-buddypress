@@ -5,7 +5,7 @@ require_once("mobbr.utils.php");
 class MobbrWidget extends WP_Widget {
 
     public function __construct() {
-        parent::__construct("mobbr_widget", "Mobbr Widget", array("description" => "Add mobbr button to your WordPress/BuddyPress website."));
+        parent::__construct("mobbr_widget", "Mobbr Widget", array("description" => "Add Mobbr payments button to your WordPress website."));
     }
 
     public function form($instance) {
@@ -29,17 +29,22 @@ class MobbrWidget extends WP_Widget {
     }
 
     public function widget($args, $instance) {
-        $options = get_option('mobbr_plugin_options');
-        if(is_home() && isset($options['button_position']) && $options['button_position'] == BUTTON_POSITION_WIDGET)
+        $options = get_mobbr_plugin_options();
+
+        if($options['require_auth'] && !is_user_logged_in())
             return;
-        $currency = isset($instance["currency"])?$instance["currency"]:"USD";
-        $lighbox_url = LIGHTBOX_URL;
+
+        if(is_home() && isset($options['button_position']) && $options['button_position'] == MOBBR_BUTTON_POSITION_WIDGET)
+            return;
+
+        global $MOBBR_SUPPORTED_CURRENCIES;
+        $currency = (isset($instance["currency"]) && $instance["currency"] && in_array($instance["currency"], $MOBBR_SUPPORTED_CURRENCIES))?$instance["currency"]:"USD";
         $url = get_post_url();
 
-        echo "<script type='text/javascript'>mobbr.setLightboxUrl('$lighbox_url');</script>";
+        echo "<script type='text/javascript'>mobbr.setLightboxUrl('".MOBBR_LIGHTBOX_URL."');</script>";
 
-        if($options['button_style'] == BUTTON_STYLE_CUSTOM) {
-            echo "<button onClick=\"mobbr.makePayment('$url')\">Make Payment</button>";
+        if($options['button_style'] == MOBBR_BUTTON_STYLE_CUSTOM) {
+            echo "<button onClick=\"mobbr.makePayment('$url')\">$options[button_text]</button>";
         } else {
             echo "<script type='text/javascript'>mobbr.button('$url', '$currency');</script>";
         }

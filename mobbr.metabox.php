@@ -86,7 +86,7 @@ function mobbr_plugin_save_meta_box_data($post_id) {
 
         $is_email = filter_var($id, FILTER_VALIDATE_EMAIL);
 
-        if($id && ($is_email || preg_match(URL_REGEX, $id)) && $share > 0 && $share < 100) {
+        if($id && ($is_email || preg_match(MOBBR_REGEX_URL, $id)) && $share > 0 && $share < 100) {
             if($is_email)
                 $id = 'mailto:'.$id;
             $data = array('id' => $id, 'share' => $share, 'role' => 'contributor');
