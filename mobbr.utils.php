@@ -28,7 +28,7 @@ function get_mobbr_participation() {
     );
 
     global $wp_query;
-    $content = in_the_loop()?get_the_content():$wp_query->post->post_content;
+    $content = strip_shortcodes(in_the_loop()?get_the_content():$wp_query->post->post_content);
 
     $task_url = "";
     if(preg_match(MOBBR_REGEX_URL, $title.' '.$content, $matches)) {
@@ -59,7 +59,8 @@ function get_mobbr_participation() {
     $script_type = 'payment';
     $script_lang = 'EN';
     $script_title = $title;
-    $script_desc = htmlspecialchars(strip_tags($content), ENT_QUOTES);
+    $desc = (strlen($content) > 200)?(substr($content,0,200)."..."):$content;
+    $script_desc = htmlentities(strip_tags($desc), ENT_QUOTES);
     $script_keywords = array('tunga.io', 'tunga');
     $script_participants = array();
     if(($options['share'] > 0)) {
