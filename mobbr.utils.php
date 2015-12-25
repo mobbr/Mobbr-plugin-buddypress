@@ -59,7 +59,7 @@ function get_mobbr_participation() {
     $script_type = 'payment';
     $script_lang = 'EN';
     $script_title = $title;
-    $script_desc = $content;
+    $script_desc = htmlspecialchars(strip_tags($content), ENT_QUOTES);
     $script_keywords = array('tunga.io', 'tunga');
     $script_participants = array();
     if(($options['share'] > 0)) {
