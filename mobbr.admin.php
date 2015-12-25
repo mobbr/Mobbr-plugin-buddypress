@@ -3,13 +3,13 @@ require_once("mobbr.config.php");
 require_once("mobbr.utils.php");
 
 function plugin_admin_add_page() {
-    add_options_page('Mobbr', 'Mobbr', 'manage_options', 'mobbr', 'mobbr_plugin_options_page');
+    add_options_page('Mobbr Payments', 'Mobbr Payments', 'manage_options', 'mobbr-payments', 'mobbr_plugin_options_page');
 }
 
 function mobbr_plugin_options_page() {
     ?>
     <div>
-        <h2>Mobbr Plugin</h2>
+        <h2>Mobbr Payments</h2>
         <form action="options.php" method="post">
             <?php settings_fields('mobbr_plugin_options'); ?>
             <?php do_settings_sections('mobbr_plugin'); ?>

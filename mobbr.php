@@ -48,3 +48,5 @@ $options = get_mobbr_plugin_options();
 if($options['require_auth']) {
     add_action('wp_ajax_nopriv_add_post_meta', 'ajax_save_post_participation_metadata');
 }
+
+add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'mobbr_plugin_action_links');

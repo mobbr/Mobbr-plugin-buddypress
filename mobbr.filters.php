@@ -14,3 +14,8 @@ function add_mobbr_button_to_content($content) {
     if($can_show_button && isset($options['button_position']) && $options['button_position'] == MOBBR_BUTTON_POSITION_BOTTOM)
         $widget->widget(null, null);
 }
+
+function mobbr_plugin_action_links( $links ) {
+    $links[] = '<a href="'.esc_url(get_admin_url(null, 'options-general.php?page=mobbr-payments')).'">Settings</a>';
+    return $links;
+}
