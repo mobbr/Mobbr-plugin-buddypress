@@ -105,7 +105,7 @@ function mobbr_plugin_options_validate($input) {
     }
     if(isset($input['share'])) {
         $share = (int) $input['share'];
-        if($share > 0 && $share < 100) {
+        if($share >= 0 && $share <= 100) {
             $options['share'] = $share;
         }
     }

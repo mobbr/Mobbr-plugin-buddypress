@@ -1,6 +1,8 @@
 <?php
 define('MOBBR_LIGHTBOX_URL', plugin_dir_url( __FILE__ ) . "lightbox/#");
 define('MOBBR_URI_INFO_ENDPOINT', "https://api.mobbr.com/api_v1/uris/info");
+define('MOBBR_ROLE_WEBSITE_OWNER', 'owner');
+define('MOBBR_ROLE_TASK_CONTRIBUTOR', 'contributor');
 define('MOBBR_BUTTON_STYLE_OFFICIAL', 'official');
 define('MOBBR_BUTTON_STYLE_CUSTOM', 'custom');
 define('MOBBR_BUTTON_PLACEMENT_POSTS', 'posts');

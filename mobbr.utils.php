@@ -23,7 +23,7 @@ function get_mobbr_participation() {
     $options = get_mobbr_plugin_options();
     $owner = array(
         "id" => "mailto:$options[email]",
-        "role" => "owner",
+        "role" => MOBBR_ROLE_WEBSITE_OWNER,
         "share" => "$options[share]%"
     );
 
@@ -61,7 +61,10 @@ function get_mobbr_participation() {
     $script_title = $title;
     $script_desc = $content;
     $script_keywords = array('tunga.io', 'tunga');
-    $script_participants = array($owner);
+    $script_participants = array();
+    if(($options['share'] > 0)) {
+        $script_participants[] = $owner;
+    }
 
     $use_local_script = true;
 
@@ -82,7 +85,7 @@ function get_mobbr_participation() {
                 $script_keywords = array_merge($script_keywords, $task_script['keywords']);
             if(isset($task_script['participants']) && is_array($task_script['participants'])) {
                 $task_participants = $task_script['participants'];
-                if($options['share'] >= 0 and $options['share'] < 100) {
+                if($options['share'] < 100) {
                     $absolute_shares = array();
                     $relative_shares = array();
                     $absolute_participants = array();
@@ -152,7 +155,7 @@ function get_mobbr_participation() {
         "keywords" => $script_keywords,
         "participants" => $script_participants,
         "extras" => array(
-            "editable" => $use_local_script,
+            "editable" => $use_local_script && $options['share'] < 100,
             "task_url" => $task_url,
             "amount" => $amount,
             "currency" => $currency
