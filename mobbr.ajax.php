@@ -28,6 +28,11 @@ function ajax_save_post_participation_metadata() {
                         $success = true;
                     }
                 }
+
+                if(!$success && $role == 'owner' && count($participants) == 1) {
+                    // Allows payer to choose the owner as the only recipient
+                    $success = true;
+                }
             }
         } else {
             $error_msg = "Couldn't find post";
