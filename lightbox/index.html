@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js ie ie6 lt-ie9 lt-ie8 lt-ie7" xmlns:ng="http://angularjs.org"> <![endif]-->
+<!--[if IE 7]><html class="no-js ie ie7 lt-ie9 lt-ie8 lt-ie7" xmlns:ng="http://angularjs.org"> <![endif]-->
+<!--[if IE 8]><html class="no-js ie ie8 lt-ie9 lt-ie8" xmlns:ng="http://angularjs.org"> <![endif]-->
+<!--[if IE 9]><html class="no-js ie ie9 lt-ie9" xmlns:ng="http://angularjs.org"> <![endif]-->
+<!--[if gt IE 9]><html xmlns:ng="http://angularjs.org"> <![endif]-->
+<!--[if !IE]><!--><html xmlns:ng="http://angularjs.org"> <!--<![endif]-->
+    <head>
+        <script src="scripts/d0141918.combined-head.js"></script>
+        <!--[if lte IE 8]>
+        <script>
+            document.createElement('ng-include');
+            document.createElement('ng-pluralize');
+            document.createElement('ng-view');
+            document.createElement('ng-switch');
+            document.createElement('accordion');
+            document.createElement('accordion-group');
+            document.createElement('interceptor');
+            document.createElement('payments');
+            document.createElement('paymentsprovided');
+            document.createElement('user-settings');
+            document.createElement('peoplepagesearch');
+            document.createElement('people');
+            document.createElement('mobbrbutton');
+            document.createElement('tabs');
+            document.createElement('pane');
+            document.createElement('alert');
+        </script>
+        <![endif]-->
+        <title>MOBBR Crowdpayment System</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <meta property="og:locale" content="en_US">
+        <meta property="og:title" content="MOBBR crowdpayment system">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://mobbr.com">
+        <meta property="og:image" content="https://mobbr.com/img/mobbr-ripple.jpg">
+        <meta property="og:description" content="Welcome to MOBBR, the world's first crowdpayment system. Start sharing rewards and donations in bitcoin, XRP, social currencies and FIAT currencies.">
+        <meta name="description" content="Welcome to MOBBR, the world's first crowdpayment system. Start sharing rewards and donations in bitcoin, XRP, social currencies and FIAT currencies.">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700" rel="stylesheet">
+        <link href="//fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel="stylesheet">
+        <link rel="stylesheet" href="styles/75ff8f35.style-lightbox.css"/>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-46675002-1', 'mobbr.com');
+        </script>
+    </head>
+    <body ng-app="mobbr-lightbox" id="ng-app" ng-class="{ 'mobbr-test': isTest(), 'ng-app': true }" idle-timeout="">
+        <!--[if lt IE 8]>
+        <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser
+            today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better
+            experience this site. {{showMobbrFrame}}</p>
+        <![endif]-->
+        <!--[if lt IE 9]>
+        <script src="scripts/c71dbec1.combined-ie.js"></script>
+        <![endif]-->
+        <div class="ng-cloak messaging container-fluid" ng-show="message">
+            <div class="container">
+                <alert class="alert-{{ message.type }}">
+                    {{ message.text }}
+                </alert>
+            </div>
+        </div>
+
+        <div class="container lightbox" ng-cloak="">
+            <header class="navbar navbar-top navbar-default" role="navigation">
+                <div class="row expand-pad">
+                    <div class="col-xs-12">
+                        <a ng-href="state.href('main')" class="logo text-right">
+                            <img src="img/logo-mobbr.png">
+                        </a>
+                    </div>
+
+                    <ul class="nav menu" ng-show="$state.includes('payment')">
+                        <li ng-class="{ 'active': $state.is('payment') }" ng-show="!noScript">
+                            <a ng-href="{{ $state.href('payment') }}" class="text-center">
+                                <span class="mobbricon mobbricon-transaction"></span>
+                                <small>{{ scriptType || 'Pledge' }}</small>
+                            </a>
+                        </li>
+                        <li ng-class="{ 'active': $state.is('payment.payments') }" ng-show="!noScript">
+                            <a ng-href="{{ $state.href('payment.payments') }}" class="text-center">
+                                <span class="mobbricon mobbricon-payments"></span>
+                                <small>Payments</small>
+                            </a>
+                        </li>
+                        <li ng-class="{ 'active': $state.is('payment.receivers') }" ng-show="!noScript">
+                            <a ng-href="{{ $state.href('payment.receivers') }}" class="text-center">
+                                <span class="mobbricon mobbricon-crowd"></span>
+                                <small>Receivers</small>
+                            </a>
+                        </li>
+                        <li ng-class="{ 'active': $state.is('payment.related') }">
+                            <a ng-href="{{ $state.href('payment.related') }}" class="text-center">
+                                <span class="mobbricon mobbricon-digger"></span>
+                                <small>Related</small>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <ul class="nav menu pull-right" ng-show="$state.includes('payment')">
+                        <li ng-class="{ 'active': $state.is('payment.login') }">
+                            <a ng-href="{{ $state.href('payment.login') }}" class="text-center">
+                                <img ng-show="mobbrSession && mobbrSession.isAuthorized()" ng-src="{{ $mobbrStorage.user.thumbnail }}" class="user-thumb" width="45" height="50">
+                                <span ng-show="mobbrSession && !mobbrSession.isAuthorized()">
+                                    <span class="mobbricon mobbricon-person"></span>
+                                    <small>Login</small>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </header>
+            <div ng-show="loading" class="loader">Loading...</div>
+            <div ui-view=""></div>
+        </div>
+        <script src="scripts/9a32a4d8.combined.js"></script>
+        <script src="scripts/cddb9381.mobbr-lightbox.js"></script>
+    </body>
+</html>
