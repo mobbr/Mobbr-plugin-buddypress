@@ -38,9 +38,9 @@ add_action('admin_menu', 'plugin_admin_add_page');
 
 add_action('admin_init', 'plugin_admin_init');
 
-add_action('add_meta_boxes', 'mobbr_plugin_add_meta_box');
+add_action('add_meta_boxes', 'mobbr_plugin_add_meta_boxes');
 
-add_action('save_post', 'mobbr_plugin_save_meta_box_data');
+add_action('save_post', 'mobbr_plugin_save_meta_boxes');
 
 add_action('wp_ajax_add_post_meta', 'ajax_save_post_participation_metadata');
 

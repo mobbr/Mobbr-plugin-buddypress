@@ -28,24 +28,29 @@ function get_mobbr_participation() {
     );
 
     global $wp_query;
+    $post_id = $wp_query->post->ID;
+    $amount = (int) get_post_meta($post_id, 'taskfee', true);
+    $currency = get_post_meta($post_id, 'taskcurrency', true);
+    $task_url = get_post_meta($post_id, 'taskurl', true);
+    wp_reset_query();
+
     $content = strip_shortcodes(in_the_loop()?get_the_content():$wp_query->post->post_content);
 
-    $task_url = "";
-    if(preg_match(MOBBR_REGEX_URL, $title.' '.$content, $matches)) {
+    if(!$task_url && preg_match(MOBBR_REGEX_URL, $title.' '.$content, $matches)) {
         $task_url = $matches[0];
     }
 
-    $amount = 0;
-    $currency = 'USD';
-    if(preg_match(MOBBR_REGEX_TASK_AMOUNT, $title.' '.$content, $matches)) {
+    if((!$amount || !$currency) && preg_match(MOBBR_REGEX_TASK_AMOUNT, $title.' '.$content, $matches)) {
         $number = null;
-        if(isset($matches['amount']) && $matches['amount']) {
-            $number = $matches['amount'];
-        } else if(isset($matches['amount2']) && $matches['amount2']) {
-            $number = $matches['amount2'];
-        }
-        if($number) {
-            $amount = str_replace(",",(preg_match("/\d+\.\d+/i", $number)?"":"."),$number);
+        if(!$amount) {
+            if(isset($matches['amount']) && $matches['amount']) {
+                $number = $matches['amount'];
+            } else if(isset($matches['amount2']) && $matches['amount2']) {
+                $number = $matches['amount2'];
+            }
+            if($number) {
+                $amount = str_replace(",",(preg_match("/\d+\.\d+/i", $number)?"":"."),$number);
+            }
         }
 
         global $MOBBR_EURO_SYMBOLS;
@@ -55,6 +60,10 @@ function get_mobbr_participation() {
 
     }
     $amount = floatval($amount);
+    global $MOBBR_SUPPORTED_CURRENCIES;
+    if(!$currency || !in_array($currency, $MOBBR_SUPPORTED_CURRENCIES)) {
+        $currency = 'USD';
+    }
 
     $script_type = 'payment';
     $script_lang = 'EN';
