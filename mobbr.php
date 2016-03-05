@@ -2,14 +2,14 @@
 /**
  * @package Mobbr Payments
  * @author David Semakula
- * @version 0.1
+ * @version 0.2
  */
 /*
 Plugin Name: Mobbr Payments
 Plugin URI: http://wordpress.org/plugins/mobbr-payments/
 Description: Adds mobbr crowd payments to your WordPress website.
 Author: David Semakula
-Version: 0.1
+Version: 0.2
 Author URI: https://github.com/davidsemakula
 */
 
