@@ -44,7 +44,7 @@ class MobbrWidget extends WP_Widget {
         echo "<script type='text/javascript'>mobbr.setLightboxUrl('".MOBBR_LIGHTBOX_URL."');</script>";
 
         if($options['button_style'] == MOBBR_BUTTON_STYLE_CUSTOM) {
-            echo "<button onClick=\"mobbr.makePayment('$url')\">$options[button_text]</button>";
+            echo "<button class='mobbr-payment-button' onClick=\"mobbr.makePayment('$url')\">$options[button_text]</button>";
         } else {
             echo "<script type='text/javascript'>mobbr.button('$url', '$currency');</script>";
         }
